@@ -1,9 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
+import { IRouteComponentProps } from 'umi';
+import HeaderBar from '@/components/HeaderBar';
 
-const whiteListUrl = ['/login', '/register'];
-
-export default (props: any) => {
+const Layout = (props: IRouteComponentProps) => {
   return (
-    <div>123</div>
+    <div>
+      <HeaderBar />
+      {props.children}
+    </div>
   );
 };
+
+export default Layout;

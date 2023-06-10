@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@ant-design/pro-components": "^2.5.5",
     "@types/lodash": "^4.14.191",
     "antd": "^5.2.1",
     "axios": "^0.26.1",
@@ -12,7 +13,6 @@
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-activation": "^0.11.2",
-    "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.2",
     "react-scripts": "5.0.0",
@@ -50,7 +50,6 @@
     "@babel/eslint-parser": "^7.19.1",
     "@types/antd": "^1.0.0",
     "@types/react": "^18.0.21",
-    "@types/react-color": "^3.0.6",
     "@types/react-dom": "^18.0.6",
     "@umijs/preset-react": "~1.8.31",
     "add-asset-html-webpack-plugin": "^5.0.2",

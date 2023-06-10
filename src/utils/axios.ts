@@ -3,14 +3,6 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } f
 
 const HTTP_STATUS_SUCCESS_CODE: Array<number> = [200];
 
-const getToken = () => {
-  if (!localStorage) {
-    return '';
-  }
-  const token = localStorage.getItem('token') || '';
-  return token;
-};
-
 const defaultConfig: AxiosRequestConfig = {
   timeout: 100 * 1000,
   headers: {
@@ -19,24 +11,17 @@ const defaultConfig: AxiosRequestConfig = {
   baseURL: 'https://bf.tomsawyer2.xyz',
 };
 
-// 请求拦截
-const requestInterceptor = (config: AxiosRequestConfig) => {
-  // @ts-ignore
-  config.headers.Authorization = getToken();
-  return config;
-};
-
 interface responseData {
   data: Record<string, unknown>;
-  status: number;
-  msg: string;
+  code: number;
+  msg?: string;
 }
 
 const responseInterceptor = (response: AxiosResponse): responseData => {
   const { status, data } = response;
-  if (!HTTP_STATUS_SUCCESS_CODE.includes(status) || data.status !== 0) {
-    message.error(data.msg);
-    throw data.msg;
+  if (!HTTP_STATUS_SUCCESS_CODE.includes(status) || data.code !== 200) {
+    message.error(data?.msg || '请求失败');
+    throw data?.msg || '请求失败';
   }
 
   return data;
@@ -55,7 +40,6 @@ const commonErrorHander = (error: AxiosError) => {
 
 const instance: AxiosInstance = axios.create(defaultConfig);
 
-instance.interceptors.request.use(requestInterceptor);
 instance.interceptors.response.use(responseInterceptor, commonErrorHander);
 
 export default instance;

@@ -10,7 +10,25 @@ export default defineConfig({
   routes: [
     {
       path: '/',
-      component: '@/pages/layout/index'
+      component: '@/pages/layout/index',
+      routes: [
+        {
+          path: '/student',
+          component: '@/pages/student/index',
+        },
+        {
+          path: '/teacher',
+          component: '@/pages/teacher/index',
+        },
+        {
+          path: '/course',
+          component: '@/pages/course/index',
+        },
+        {
+          path: '/resource',
+          component: '@/pages/resource/index',
+        },
+      ],
     },
   ],
   title: 'Database_Course_Design_FE',

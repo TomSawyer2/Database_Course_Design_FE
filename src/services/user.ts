@@ -1,115 +1,119 @@
-import { CodeType, UserPermission, UserStatus } from '@/const/typings';
+/* eslint-disable no-unused-vars */
 import axios from '@/utils/axios';
 
-export interface RegisterParams {
-  username: string;
-  password: string;
-}
-
-export type LoginParams = RegisterParams;
-
-export interface CodeParams {
-  content: string;
-  type: CodeType;
-  codeId?: number;
-  id?: number;
-}
-
-export interface RunCodeParams {
-  codeIdAHoney: number;
-  codeIdAHornet: number;
-  codeIdBHoney: number;
-  codeIdBHornet: number;
+export interface AddStudentParams {
   name: string;
-  totalRounds: number;
-  timeout: number;
+  sex: string;
+  department: string;
+  class: string;
+  studentId: string;
+  telephone: string;
 }
 
-export interface CheckStatusParams {
-  batchTaskId: number;
+export interface AddCourseParams {
+  courseName: string;
+  maxSelectedNum: string;
+  resourceIds: number[];
 }
 
-export interface PageParams {
-  page: number;
-  pageSize: number;
+export interface AddResourceParams {
+  resourceName: string;
+  resourceNum: string;
 }
 
-export interface UserInfo {
+export interface AddTeacherParams {
+  name: string;
+  teacherId: string;
+  courseId: string;
+}
+
+export enum DeleteType {
+  Student = 'student',
+  Teacher = 'teacher',
+  Course = 'course',
+  Resource = 'hard_resource',
+}
+
+export interface StudentInfo extends AddStudentParams {
   id: number;
-  username: string;
-  permission: UserPermission;
-  status: UserStatus;
-  batchTaskId?: number | null;
 }
 
-// 注册
-export async function register(params: RegisterParams) {
-  const url = '/api/register';
-
-  const { data } = await axios.post(url, params);
-  return data;
-}
-
-// 登录
-export async function login(params: LoginParams) {
-  const url = '/api/login';
-
-  const { data } = await axios.post(url, params);
-  return data;
-}
-
-// 上传代码
-export async function uploadCode(params: CodeParams) {
-  const url = '/api/batchTasks/uploadCodeForBatchTasks';
-
-  const { data } = await axios.post(url, params);
-  return data;
-}
-
-// 运行代码
-export async function runCode(params: RunCodeParams) {
-  const url = '/api/batchTasks/run';
-
-  const { data } = await axios.post(url, params);
-  return data;
-}
-
-// 查询状态
-export async function checkStatus(params: CheckStatusParams) {
-  const url = '/api/batchTasks/status';
-
-  const { data } = await axios.get(url, { params });
-  return data;
-}
-
-// 取消任务
-export async function stopTask(params: CheckStatusParams) {
-  const url = '/api/batchTasks/stop';
-
-  const { data } = await axios.post(url, params);
-  return data;
-}
-
-// 查询结果
-export async function checkResult(params: CheckStatusParams) {
-  const url = '/api/batchTasks/result';
-
-  const { data } = await axios.get(url, { params });
-  return data;
-}
-
-// 获取历史记录
-export async function getHistory(params: PageParams) {
-  const url = '/api/batchTasks/history';
-
-  const { data } = await axios.get(url, { params });
-  return data;
-}
-
-// 获取用户信息
-export async function getUserInfo() {
-  const url = '/api/userInfo';
+// 获取所有学生信息
+export async function getStudentInfo() {
+  const url = '/api/student/get_all';
 
   const { data } = await axios.get(url);
+  return data;
+}
+
+// 获取所有教师信息
+export async function getTeacherInfo() {
+  const url = '/api/teacher/get_all';
+
+  const { data } = await axios.get(url);
+  return data;
+}
+
+// 获取所有课程信息
+export async function getCourseInfo() {
+  const url = '/api/course/get_all';
+
+  const { data } = await axios.get(url);
+  return data;
+}
+
+// 获取所有硬件资源信息
+export async function getResourceInfo() {
+  const url = '/api/hard_resource/get_all';
+
+  const { data } = await axios.get(url);
+  return data;
+}
+
+// 新增学生
+export async function addStudent(params: AddStudentParams) {
+  const url = '/api/student/add';
+
+  const { data } = await axios.post(url, params);
+  return data;
+}
+
+// 新增课程
+export async function addCourse(params: AddCourseParams) {
+  const url = '/api/course/add';
+
+  const { data } = await axios.post(url, params);
+  return data;
+}
+
+// 新增硬件资源
+export async function addResource(params: AddResourceParams) {
+  const url = '/api/hard_resource/add';
+
+  const { data } = await axios.post(url, params);
+  return data;
+}
+
+// 新增教师
+export async function addTeacher(params: AddTeacherParams) {
+  const url = '/api/teacher/add';
+
+  const { data } = await axios.post(url, params);
+  return data;
+}
+
+// 删除学生/教师/课程/硬件资源
+export async function deleteInfo(id: number, type: DeleteType) {
+  const url = `/api/${type}/delete`;
+
+  const { data } = await axios.post(url, { id });
+  return data;
+}
+
+// 查询学生
+export async function searchStudent(filter: StudentInfo) {
+  const url = '/api/student/get_by_filter';
+
+  const { data } = await axios.get(url, { params: filter });
   return data;
 }
