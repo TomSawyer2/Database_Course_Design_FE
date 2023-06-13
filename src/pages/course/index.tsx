@@ -1,8 +1,8 @@
 import AddModal from '@/components/AddModal';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
-import React, { useState } from 'react';
-import { DeleteType, addCourse, deleteInfo, getCourseInfo } from '@/services/user';
+import React, { useEffect, useState } from 'react';
+import { DeleteType, addCourse, deleteInfo, getCourseInfo, getResourceInfo } from '@/services/user';
 
 import styles from './index.less';
 
@@ -12,6 +12,12 @@ type TableListItem = {
   maxSelectNum: string;
   selectedNum: string;
   resourceIds: number[];
+};
+
+type ResourceItem = {
+  id: number;
+  resourceName: string;
+  resourceNum: string;
 };
 
 const Course: React.FC = () => {
@@ -103,6 +109,24 @@ const Course: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchResourcesList();
+  }, []);
+
+  const [selectOptionsLoading, setSelectOptionsLoading] = useState<boolean>(true);
+  const [selectOptions, setSelectOptions] = useState<ResourceItem[]>();
+  const fetchResourcesList = async () => {
+    try {
+      setSelectOptionsLoading(true);
+      const res = await getResourceInfo();
+      setSelectOptions(res);
+      setSelectOptionsLoading(false);
+    } catch (error) {
+      message.error('获取资源列表失败');
+      setSelectOptionsLoading(false);
+    }
+  };
+
   const ModalRenderContent = (
     <Form
       form={form}
@@ -131,10 +155,16 @@ const Course: React.FC = () => {
         <Select
           mode="multiple"
           placeholder="关联的硬件资源"
+          loading={selectOptionsLoading}
         >
-          <Select.Option value={1}>1</Select.Option>
-          <Select.Option value={2}>2</Select.Option>
-          <Select.Option value={3}>3</Select.Option>
+          {selectOptions?.map((item) => (
+            <Select.Option
+              key={item.id}
+              value={item.id}
+            >
+              {item.resourceName}
+            </Select.Option>
+          ))}
         </Select>
       </Form.Item>
       <Form.Item>
