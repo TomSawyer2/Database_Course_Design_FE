@@ -14,10 +14,12 @@ jobs:
         uses: actions/setup-node@v3.6.0
         with:
           node-version: "16"
+      - name: 安装pnpm
+        run: npm install pnpm -g
       - name: 安装依赖
-        run: npm install
+        run: pnpm i
       - name: 前端项目打包
-        run: npm build
+        run: pnpm build
       - name: 发布上云
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4 # 使用 SFTP 协议上传到云
         with:
