@@ -117,3 +117,11 @@ export async function searchStudent(filter: StudentInfo) {
   const { data } = await axios.get(url, { params: filter });
   return data;
 }
+
+// 重置数据库
+export async function resetDB() {
+  const url = `/api/reset`;
+
+  const { data } = await axios.post(url);
+  return data;
+}

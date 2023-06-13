@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Menu } from 'antd';
+import { Button, Menu, Modal, message } from 'antd';
 import { history } from 'umi';
 import './index.less';
+import { resetDB } from '@/services/user';
 
 const HeaderBar: React.FC = () => {
   const [currentKey, setCurrentKey] = useState<string>('1');
@@ -41,10 +42,28 @@ const HeaderBar: React.FC = () => {
     }
   }, [window.location.pathname]);
 
+  const handleResetDB = async () => {
+    Modal.confirm({
+      title: '重置数据库',
+      content: '确定要重置数据库吗？',
+      onOk: async () => {
+        await resetDB();
+        message.success('重置成功');
+        history.go(0);
+      },
+    });
+  };
+
   return (
     <div className="navbar">
       <div className="navbar-box">
         <span className="navbar-title">选课后台管理系统</span>
+        <Button
+          className="navbar-btn"
+          onClick={() => handleResetDB()}
+        >
+          重置数据库
+        </Button>
         <Menu
           theme="dark"
           mode="horizontal"
