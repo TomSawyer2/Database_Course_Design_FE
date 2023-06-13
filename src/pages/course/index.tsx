@@ -2,32 +2,27 @@ import AddModal from '@/components/AddModal';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
 import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { DeleteType, addCourse, deleteInfo, getCourseInfo, getResourceInfo } from '@/services/user';
+import {
+  CourseInfo,
+  DeleteType,
+  addCourse,
+  deleteInfo,
+  getCourseInfo,
+  getResourceInfo,
+  searchCourse,
+} from '@/services/user';
 
 import styles from './index.less';
-
-type TableListItem = {
-  id: number;
-  courseName: string;
-  maxSelectNum: string;
-  selectedNum: string;
-  resourceIds: number[];
-};
-
-type ResourceItem = {
-  id: number;
-  resourceName: string;
-  resourceNum: string;
-};
+import { CourseItem, ResourceItem } from '@/const/typings';
 
 const Course: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [form] = Form.useForm();
 
-  const [tableListDataSource, setTableListDataSource] = useState<TableListItem[]>([]);
+  const [tableListDataSource, setTableListDataSource] = useState<CourseItem[]>([]);
 
-  const columns: ProColumns<TableListItem>[] = [
+  const columns: ProColumns<CourseItem>[] = [
     {
       title: '序号',
       dataIndex: 'id',
@@ -40,15 +35,18 @@ const Course: React.FC = () => {
     {
       title: '最大可选人数',
       dataIndex: 'maxSelectNum',
+      search: false,
     },
     {
       title: '已选人数',
       dataIndex: 'selectedNum',
+      search: false,
     },
     {
       title: '关联的资源编号',
       dataIndex: 'resourceIds',
       render: (_, record) => <span>{record?.resourceIds?.join(',') || '--'}</span>,
+      search: false,
     },
     {
       title: '操作',
@@ -66,7 +64,7 @@ const Course: React.FC = () => {
     },
   ];
 
-  const handleAddCourse = async (val: Omit<Omit<TableListItem, 'id'>, 'selectedNum'>) => {
+  const handleAddCourse = async (val: Omit<Omit<CourseItem, 'id'>, 'selectedNum'>) => {
     val.maxSelectNum = val.maxSelectNum.toString();
     try {
       await addCourse(val);
@@ -194,7 +192,7 @@ const Course: React.FC = () => {
         open={addModalVisible}
         renderContent={ModalRenderContent}
       />
-      <ProTable<TableListItem>
+      <ProTable<CourseItem>
         columns={columns}
         loading={tableLoading}
         request={async (params) => {
@@ -205,10 +203,23 @@ const Course: React.FC = () => {
               success: true,
             });
           }
-          return Promise.resolve({
-            data: tableListDataSource,
-            success: true,
-          });
+          try {
+            setTableLoading(true);
+            const res = await searchCourse(params as CourseInfo);
+            setTableListDataSource(res);
+            setTableLoading(false);
+            return Promise.resolve({
+              data: res,
+              success: true,
+            });
+          } catch (error) {
+            message.error('查询失败');
+            setTableLoading(false);
+            return Promise.resolve({
+              data: tableListDataSource,
+              success: true,
+            });
+          }
         }}
         dataSource={tableListDataSource}
         pagination={false}

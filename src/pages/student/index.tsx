@@ -1,37 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Form, Input, Modal, Radio, message } from 'antd';
+import { Button, Form, Input, Modal, Radio, Select, message } from 'antd';
 import AddModal from '@/components/AddModal';
 import {
   DeleteType,
   StudentInfo,
   addStudent,
   deleteInfo,
+  getCourseInfo,
   getStudentInfo,
   searchStudent,
+  selectCourse,
 } from '@/services/user';
 
 import styles from './index.less';
-
-type TableListItem = {
-  id: number;
-  name: string;
-  sex: string;
-  studentId: string;
-  department: string;
-  className: string;
-  telephone: string;
-};
+import { CourseItem, StudentItem } from '@/const/typings';
 
 const Student: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [form] = Form.useForm();
 
-  const [tableListDataSource, setTableListDataSource] = useState<TableListItem[]>([]);
+  const [tableListDataSource, setTableListDataSource] = useState<StudentItem[]>([]);
 
-  const columns: ProColumns<TableListItem>[] = [
+  const columns: ProColumns<StudentItem>[] = [
     {
       title: '序号',
       dataIndex: 'id',
@@ -68,6 +61,14 @@ const Student: React.FC = () => {
       copyable: true,
     },
     {
+      title: '已选课程编号',
+      dataIndex: 'courseIds',
+      search: false,
+      render: (_, record) => {
+        return record.courseIds.join(',');
+      },
+    },
+    {
       title: '操作',
       key: 'option',
       valueType: 'option',
@@ -79,11 +80,40 @@ const Student: React.FC = () => {
         >
           删除
         </a>,
+        <a
+          key="option-2"
+          onClick={() => {
+            setSelectedCourseIds(record.courseIds);
+            setSelectedStudentId(record.id);
+            setSelectModalVisible(true);
+          }}
+        >
+          选课
+        </a>,
       ],
     },
   ];
 
-  const handleAddStudent = async (val: Omit<TableListItem, 'id'>) => {
+  const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
+  const [selectedCourseIds, setSelectedCourseIds] = useState<number[]>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<number>(0);
+  const handleSelectCourse = async ({ courseId }: { courseId: number }) => {
+    try {
+      await selectCourse({
+        studentId: selectedStudentId.toString(),
+        courseId: courseId.toString(),
+      });
+      message.success('选课成功');
+      setSelectModalVisible(false);
+      await fetchStudentList();
+      setSelectedCourseIds([]);
+      setSelectedStudentId(0);
+    } catch (error) {
+      message.error('选课失败');
+    }
+  };
+
+  const handleAddStudent = async (val: Omit<StudentItem, 'id'>) => {
     try {
       await addStudent(val);
       message.success('添加成功');
@@ -124,6 +154,24 @@ const Student: React.FC = () => {
       setTableLoading(false);
     }
   };
+
+  const [selectOptionsLoading, setSelectOptionsLoading] = useState<boolean>(false);
+  const [courseInfo, setCourseInfo] = useState<CourseItem[]>([]);
+  const fetchCourseList = async () => {
+    try {
+      setSelectOptionsLoading(true);
+      const res = await getCourseInfo();
+      setCourseInfo(res);
+      setSelectOptionsLoading(false);
+    } catch (error) {
+      message.error('获取课程列表失败');
+      setSelectOptionsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourseList();
+  }, []);
 
   const ModalRenderContent = (
     <Form
@@ -196,6 +244,54 @@ const Student: React.FC = () => {
     </Form>
   );
 
+  const SelectModalRenderContent = (
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleSelectCourse}
+    >
+      <Form.Item
+        name="courseId"
+        label="课程"
+        rules={[{ required: true, message: '请选择课程' }]}
+      >
+        <Select
+          loading={selectOptionsLoading}
+          placeholder="请选择课程"
+        >
+          {courseInfo.map(
+            (item) =>
+              !selectedCourseIds.includes(item.id) && (
+                <Select.Option
+                  key={item.id}
+                  value={item.id}
+                >
+                  {item.courseName}
+                </Select.Option>
+              ),
+          )}
+        </Select>
+      </Form.Item>
+      <Form.Item>
+        <div className={styles.btnGroup}>
+          <Button
+            className={styles.btn}
+            onClick={() => setSelectModalVisible(false)}
+          >
+            取消
+          </Button>
+          <Button
+            className={styles.btn}
+            type="primary"
+            htmlType="submit"
+          >
+            确定
+          </Button>
+        </div>
+      </Form.Item>
+    </Form>
+  );
+
   return (
     <div className={styles.student}>
       <AddModal
@@ -203,7 +299,12 @@ const Student: React.FC = () => {
         open={addModalVisible}
         renderContent={ModalRenderContent}
       />
-      <ProTable<TableListItem>
+      <AddModal
+        title="选课"
+        open={selectModalVisible}
+        renderContent={SelectModalRenderContent}
+      />
+      <ProTable<StudentItem>
         columns={columns}
         loading={tableLoading}
         request={async (params) => {

@@ -1,26 +1,28 @@
-import AddModal from '@/components/AddModal';
-import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, Form, Input, Modal, message } from 'antd';
 import React, { useState } from 'react';
-import { DeleteType, addTeacher, deleteInfo, getTeacherInfo } from '@/services/user';
+import { Button, Form, Input, Modal, message } from 'antd';
+import { ProColumns, ProTable } from '@ant-design/pro-components';
+
+import {
+  DeleteType,
+  TeacherInfo,
+  addTeacher,
+  deleteInfo,
+  getTeacherInfo,
+  searchTeacher,
+} from '@/services/user';
+import { TeacherItem } from '@/const/typings';
+import AddModal from '@/components/AddModal';
 
 import styles from './index.less';
-
-type TableListItem = {
-  id: number;
-  name: string;
-  teacherId: string;
-  courseId: string;
-};
 
 const Teacher: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [form] = Form.useForm();
 
-  const [tableListDataSource, setTableListDataSource] = useState<TableListItem[]>([]);
+  const [tableListDataSource, setTableListDataSource] = useState<TeacherItem[]>([]);
 
-  const columns: ProColumns<TableListItem>[] = [
+  const columns: ProColumns<TeacherItem>[] = [
     {
       title: '序号',
       dataIndex: 'id',
@@ -57,7 +59,7 @@ const Teacher: React.FC = () => {
     },
   ];
 
-  const handleAddTeacher = async (val: Omit<TableListItem, 'id'>) => {
+  const handleAddTeacher = async (val: Omit<TeacherItem, 'id'>) => {
     try {
       await addTeacher(val);
       message.success('添加成功');
@@ -153,7 +155,7 @@ const Teacher: React.FC = () => {
         open={addModalVisible}
         renderContent={ModalRenderContent}
       />
-      <ProTable<TableListItem>
+      <ProTable<TeacherItem>
         columns={columns}
         loading={tableLoading}
         request={async (params) => {
@@ -164,10 +166,23 @@ const Teacher: React.FC = () => {
               success: true,
             });
           }
-          return Promise.resolve({
-            data: tableListDataSource,
-            success: true,
-          });
+          try {
+            setTableLoading(true);
+            const res = await searchTeacher(params as TeacherInfo);
+            setTableListDataSource(res);
+            setTableLoading(false);
+            return Promise.resolve({
+              data: res,
+              success: true,
+            });
+          } catch (error) {
+            message.error('查询失败');
+            setTableLoading(false);
+            return Promise.resolve({
+              data: tableListDataSource,
+              success: true,
+            });
+          }
         }}
         dataSource={tableListDataSource}
         pagination={false}

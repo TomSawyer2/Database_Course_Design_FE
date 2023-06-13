@@ -38,6 +38,25 @@ export interface StudentInfo extends AddStudentParams {
   id: number;
 }
 
+export interface TeacherInfo extends AddTeacherParams {
+  id: number;
+}
+
+export interface CourseInfo {
+  id: number;
+  courseName: string;
+}
+
+export interface ResourceInfo {
+  id: number;
+  resourceName: string;
+}
+
+export interface SelectCourseParams {
+  studentId: string;
+  courseId: string;
+}
+
 // 获取所有学生信息
 export async function getStudentInfo() {
   const url = '/api/student/get_all';
@@ -118,10 +137,42 @@ export async function searchStudent(filter: StudentInfo) {
   return data;
 }
 
+// 查询教师
+export async function searchTeacher(filter: TeacherInfo) {
+  const url = '/api/teacher/get_by_filter';
+
+  const { data } = await axios.get(url, { params: filter });
+  return data;
+}
+
+// 查询课程
+export async function searchCourse(filter: CourseInfo) {
+  const url = '/api/course/get_by_filter';
+
+  const { data } = await axios.get(url, { params: filter });
+  return data;
+}
+
+// 查询硬件资源
+export async function searchResource(filter: ResourceInfo) {
+  const url = '/api/hard_resource/get_by_filter';
+
+  const { data } = await axios.get(url, { params: filter });
+  return data;
+}
+
 // 重置数据库
 export async function resetDB() {
   const url = `/api/reset`;
 
   const { data } = await axios.post(url);
+  return data;
+}
+
+// 选课
+export async function selectCourse(params: SelectCourseParams) {
+  const url = `/api/course/select_course`;
+
+  const { data } = await axios.post(url, params);
   return data;
 }

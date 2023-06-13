@@ -16,6 +16,7 @@ const AddModal = (props: AddModalProps) => {
       open={open}
       footer={null}
       closable={false}
+      destroyOnClose={true}
     >
       {renderContent}
     </Modal>

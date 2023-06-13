@@ -4,22 +4,24 @@ import { Button, Form, Input, InputNumber, Modal, message } from 'antd';
 import React, { useState } from 'react';
 
 import styles from './index.less';
-import { DeleteType, addResource, deleteInfo, getResourceInfo } from '@/services/user';
-
-type TableListItem = {
-  id: number;
-  resourceName: string;
-  resourceNum: string;
-};
+import {
+  DeleteType,
+  ResourceInfo,
+  addResource,
+  deleteInfo,
+  getResourceInfo,
+  searchResource,
+} from '@/services/user';
+import { ResourceItem } from '@/const/typings';
 
 const Resource: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
   const [form] = Form.useForm();
 
-  const [tableListDataSource, setTableListDataSource] = useState<TableListItem[]>([]);
+  const [tableListDataSource, setTableListDataSource] = useState<ResourceItem[]>([]);
 
-  const columns: ProColumns<TableListItem>[] = [
+  const columns: ProColumns<ResourceItem>[] = [
     {
       title: '序号',
       dataIndex: 'id',
@@ -32,6 +34,7 @@ const Resource: React.FC = () => {
     {
       title: '资源数量',
       dataIndex: 'resourceNum',
+      search: false,
     },
     {
       title: '操作',
@@ -49,7 +52,7 @@ const Resource: React.FC = () => {
     },
   ];
 
-  const handleAddResource = async (val: Omit<TableListItem, 'id'>) => {
+  const handleAddResource = async (val: Omit<ResourceItem, 'id'>) => {
     val.resourceNum = val.resourceNum.toString();
     try {
       await addResource(val);
@@ -139,7 +142,7 @@ const Resource: React.FC = () => {
         open={addModalVisible}
         renderContent={ModalRenderContent}
       />
-      <ProTable<TableListItem>
+      <ProTable<ResourceItem>
         columns={columns}
         loading={tableLoading}
         request={async (params) => {
@@ -150,10 +153,23 @@ const Resource: React.FC = () => {
               success: true,
             });
           }
-          return Promise.resolve({
-            data: tableListDataSource,
-            success: true,
-          });
+          try {
+            setTableLoading(true);
+            const res = await searchResource(params as ResourceInfo);
+            setTableListDataSource(res);
+            setTableLoading(false);
+            return Promise.resolve({
+              data: res,
+              success: true,
+            });
+          } catch (error) {
+            message.error('查询失败');
+            setTableLoading(false);
+            return Promise.resolve({
+              data: tableListDataSource,
+              success: true,
+            });
+          }
         }}
         dataSource={tableListDataSource}
         pagination={false}
