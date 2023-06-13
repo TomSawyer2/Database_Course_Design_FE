@@ -1,0 +1,29 @@
+name: deploy front end
+
+on:
+  push:
+    branches: main # master 分支提交时触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 运行环境
+    steps:
+      - name: 签出代码
+        uses: actions/checkout@master
+      - name: 安装 nodejs
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: "16"
+      - name: 安装依赖
+        run: npm install
+      - name: 前端项目打包
+        run: npm build
+      - name: 发布上云
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4 # 使用 SFTP 协议上传到云
+        with:
+          username: 'hanshan'
+          server: '${{ secrets.SERVER_HOST }}'
+          ssh_private_key: '${{ secrets.SERVER_PRIVATE_KEY }}'
+          local_path: 'dist/*'
+          remote_path: 'release/database_course_frontend'
+          args: "-o ConnectTimeout=5"
