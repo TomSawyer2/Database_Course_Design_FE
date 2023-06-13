@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Menu, Modal, message } from 'antd';
 import { history } from 'umi';
-import './index.less';
+
 import { resetDB } from '@/services/user';
+
+import './index.less';
 
 const HeaderBar: React.FC = () => {
   const [currentKey, setCurrentKey] = useState<string>('1');

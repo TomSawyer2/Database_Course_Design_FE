@@ -18,9 +18,8 @@ import styles from './index.less';
 const Teacher: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
-  const [form] = Form.useForm();
-
   const [tableListDataSource, setTableListDataSource] = useState<TeacherItem[]>([]);
+  const [form] = Form.useForm();
 
   const columns: ProColumns<TeacherItem>[] = [
     {

@@ -1,9 +1,7 @@
-import AddModal from '@/components/AddModal';
-import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, Form, Input, InputNumber, Modal, message } from 'antd';
 import React, { useState } from 'react';
+import { Button, Form, Input, InputNumber, Modal, message } from 'antd';
+import { ProColumns, ProTable } from '@ant-design/pro-components';
 
-import styles from './index.less';
 import {
   DeleteType,
   ResourceInfo,
@@ -13,13 +11,15 @@ import {
   searchResource,
 } from '@/services/user';
 import { ResourceItem } from '@/const/typings';
+import AddModal from '@/components/AddModal';
+
+import styles from './index.less';
 
 const Resource: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
-  const [form] = Form.useForm();
-
   const [tableListDataSource, setTableListDataSource] = useState<ResourceItem[]>([]);
+  const [form] = Form.useForm();
 
   const columns: ProColumns<ResourceItem>[] = [
     {

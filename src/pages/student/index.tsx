@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, Modal, Radio, Select, message } from 'antd';
 import type { ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Form, Input, Modal, Radio, Select, message } from 'antd';
+
 import AddModal from '@/components/AddModal';
 import {
   DeleteType,
@@ -13,16 +14,20 @@ import {
   searchStudent,
   selectCourse,
 } from '@/services/user';
+import { CourseItem, StudentItem } from '@/const/typings';
 
 import styles from './index.less';
-import { CourseItem, StudentItem } from '@/const/typings';
 
 const Student: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
-  const [form] = Form.useForm();
-
   const [tableListDataSource, setTableListDataSource] = useState<StudentItem[]>([]);
+  const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
+  const [selectedCourseIds, setSelectedCourseIds] = useState<number[]>([]);
+  const [selectedStudentId, setSelectedStudentId] = useState<number>(0);
+  const [selectOptionsLoading, setSelectOptionsLoading] = useState<boolean>(false);
+  const [courseInfo, setCourseInfo] = useState<CourseItem[]>([]);
+  const [form] = Form.useForm();
 
   const columns: ProColumns<StudentItem>[] = [
     {
@@ -94,9 +99,6 @@ const Student: React.FC = () => {
     },
   ];
 
-  const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
-  const [selectedCourseIds, setSelectedCourseIds] = useState<number[]>([]);
-  const [selectedStudentId, setSelectedStudentId] = useState<number>(0);
   const handleSelectCourse = async ({ courseId }: { courseId: number }) => {
     try {
       await selectCourse({
@@ -155,8 +157,6 @@ const Student: React.FC = () => {
     }
   };
 
-  const [selectOptionsLoading, setSelectOptionsLoading] = useState<boolean>(false);
-  const [courseInfo, setCourseInfo] = useState<CourseItem[]>([]);
   const fetchCourseList = async () => {
     try {
       setSelectOptionsLoading(true);

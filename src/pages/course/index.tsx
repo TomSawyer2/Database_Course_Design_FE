@@ -1,7 +1,8 @@
-import AddModal from '@/components/AddModal';
-import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, InputNumber, Modal, Select, message } from 'antd';
+import { ProColumns, ProTable } from '@ant-design/pro-components';
+
+import AddModal from '@/components/AddModal';
 import {
   CourseInfo,
   DeleteType,
@@ -11,16 +12,17 @@ import {
   getResourceInfo,
   searchCourse,
 } from '@/services/user';
+import { CourseItem, ResourceItem } from '@/const/typings';
 
 import styles from './index.less';
-import { CourseItem, ResourceItem } from '@/const/typings';
 
 const Course: React.FC = () => {
   const [addModalVisible, setAddModalVisible] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState<boolean>(true);
-  const [form] = Form.useForm();
-
   const [tableListDataSource, setTableListDataSource] = useState<CourseItem[]>([]);
+  const [selectOptionsLoading, setSelectOptionsLoading] = useState<boolean>(true);
+  const [selectOptions, setSelectOptions] = useState<ResourceItem[]>();
+  const [form] = Form.useForm();
 
   const columns: ProColumns<CourseItem>[] = [
     {
@@ -107,12 +109,6 @@ const Course: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchResourcesList();
-  }, []);
-
-  const [selectOptionsLoading, setSelectOptionsLoading] = useState<boolean>(true);
-  const [selectOptions, setSelectOptions] = useState<ResourceItem[]>();
   const fetchResourcesList = async () => {
     try {
       setSelectOptionsLoading(true);
@@ -124,6 +120,10 @@ const Course: React.FC = () => {
       setSelectOptionsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchResourcesList();
+  }, []);
 
   const ModalRenderContent = (
     <Form
