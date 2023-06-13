@@ -31,7 +31,7 @@ export default defineConfig({
       ],
     },
   ],
-  title: 'Database_Course_Design_FE',
+  title: '选课后台管理系统',
   fastRefresh: {},
   mfsu: {},
   analyze: {
