@@ -44,7 +44,7 @@ const HeaderBar: React.FC = () => {
   return (
     <div className="navbar">
       <div className="navbar-box">
-        <span className="navbar-title">课设信息管理后台</span>
+        <span className="navbar-title">选课后台管理系统</span>
         <Menu
           theme="dark"
           mode="horizontal"

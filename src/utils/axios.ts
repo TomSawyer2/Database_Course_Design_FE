@@ -8,18 +8,18 @@ const defaultConfig: AxiosRequestConfig = {
   headers: {
     'Content-type': 'application/json',
   },
-  baseURL: 'https://bf.tomsawyer2.xyz',
+  baseURL: 'http://124.71.145.15:7300',
 };
 
 interface responseData {
   data: Record<string, unknown>;
-  code: number;
+  code: string;
   msg?: string;
 }
 
 const responseInterceptor = (response: AxiosResponse): responseData => {
   const { status, data } = response;
-  if (!HTTP_STATUS_SUCCESS_CODE.includes(status) || data.code !== 200) {
+  if (!HTTP_STATUS_SUCCESS_CODE.includes(status) || data.code !== '200') {
     message.error(data?.msg || '请求失败');
     throw data?.msg || '请求失败';
   }

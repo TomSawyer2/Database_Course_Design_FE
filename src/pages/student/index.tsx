@@ -20,7 +20,7 @@ type TableListItem = {
   sex: string;
   studentId: string;
   department: string;
-  class: string;
+  className: string;
   telephone: string;
 };
 
@@ -58,7 +58,7 @@ const Student: React.FC = () => {
     },
     {
       title: '班级',
-      dataIndex: 'class',
+      dataIndex: 'className',
       ellipsis: true,
     },
     {
@@ -88,6 +88,7 @@ const Student: React.FC = () => {
       await addStudent(val);
       message.success('添加成功');
       setAddModalVisible(false);
+      await fetchStudentList();
     } catch (error) {
       message.error('添加失败');
     }
@@ -100,8 +101,9 @@ const Student: React.FC = () => {
       centered: true,
       onOk: async () => {
         try {
-          deleteInfo(id, DeleteType.Student);
+          await deleteInfo(id, DeleteType.Student);
           message.success('删除成功');
+          await fetchStudentList();
         } catch (error) {
           message.error('删除失败');
         }
@@ -112,6 +114,7 @@ const Student: React.FC = () => {
   const fetchStudentList = async () => {
     try {
       setTableLoading(true);
+      setTableListDataSource([]);
       const res = await getStudentInfo();
       setTableListDataSource(res);
       setTableLoading(false);
@@ -160,7 +163,7 @@ const Student: React.FC = () => {
         <Input placeholder="学院" />
       </Form.Item>
       <Form.Item
-        name="class"
+        name="className"
         label="班级"
         rules={[{ required: true, message: '请输入班级' }]}
       >

@@ -9,8 +9,8 @@ import styles from './index.less';
 type TableListItem = {
   id: number;
   courseName: string;
-  maxSelectedNum: string;
-  selectdNum: string;
+  maxSelectNum: string;
+  selectedNum: string;
   resourceIds: number[];
 };
 
@@ -33,16 +33,16 @@ const Course: React.FC = () => {
     },
     {
       title: '最大可选人数',
-      dataIndex: 'maxSelectedNum',
+      dataIndex: 'maxSelectNum',
     },
     {
       title: '已选人数',
-      dataIndex: 'selectdNum',
+      dataIndex: 'selectedNum',
     },
     {
       title: '关联的资源编号',
       dataIndex: 'resourceIds',
-      render: (_, record) => <span>{record.resourceIds.join(',')}</span>,
+      render: (_, record) => <span>{record?.resourceIds?.join(',') || '--'}</span>,
     },
     {
       title: '操作',
@@ -60,12 +60,13 @@ const Course: React.FC = () => {
     },
   ];
 
-  const handleAddCourse = async (val: Omit<Omit<TableListItem, 'id'>, 'selectdNum'>) => {
-    val.maxSelectedNum = val.maxSelectedNum.toString();
+  const handleAddCourse = async (val: Omit<Omit<TableListItem, 'id'>, 'selectedNum'>) => {
+    val.maxSelectNum = val.maxSelectNum.toString();
     try {
       await addCourse(val);
       message.success('添加成功');
       setAddModalVisible(false);
+      await fetchCourseList();
     } catch (error) {
       message.error('添加失败');
     }
@@ -78,8 +79,9 @@ const Course: React.FC = () => {
       centered: true,
       onOk: async () => {
         try {
-          deleteInfo(id, DeleteType.Course);
+          await deleteInfo(id, DeleteType.Course);
           message.success('删除成功');
+          await fetchCourseList();
         } catch (error) {
           message.error('删除失败');
         }
@@ -90,6 +92,7 @@ const Course: React.FC = () => {
   const fetchCourseList = async () => {
     try {
       setTableLoading(true);
+      setTableListDataSource([]);
       const res = await getCourseInfo();
       setTableListDataSource(res);
       setTableLoading(false);
@@ -114,7 +117,7 @@ const Course: React.FC = () => {
         <Input placeholder="课程名" />
       </Form.Item>
       <Form.Item
-        name="maxSelectedNum"
+        name="maxSelectNum"
         label="最大可选人数"
         rules={[{ required: true, message: '请输入最大可选人数' }]}
       >

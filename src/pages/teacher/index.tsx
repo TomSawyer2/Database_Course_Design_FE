@@ -62,6 +62,7 @@ const Teacher: React.FC = () => {
       await addTeacher(val);
       message.success('添加成功');
       setAddModalVisible(false);
+      await fetchTeacherList();
     } catch (error) {
       message.error('添加失败');
     }
@@ -74,8 +75,9 @@ const Teacher: React.FC = () => {
       centered: true,
       onOk: async () => {
         try {
-          deleteInfo(id, DeleteType.Teacher);
+          await deleteInfo(id, DeleteType.Teacher);
           message.success('删除成功');
+          await fetchTeacherList();
         } catch (error) {
           message.error('删除失败');
         }
@@ -86,6 +88,7 @@ const Teacher: React.FC = () => {
   const fetchTeacherList = async () => {
     try {
       setTableLoading(true);
+      setTableListDataSource([]);
       const res = await getTeacherInfo();
       setTableListDataSource(res);
       setTableLoading(false);

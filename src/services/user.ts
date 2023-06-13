@@ -5,14 +5,14 @@ export interface AddStudentParams {
   name: string;
   sex: string;
   department: string;
-  class: string;
+  className: string;
   studentId: string;
   telephone: string;
 }
 
 export interface AddCourseParams {
   courseName: string;
-  maxSelectedNum: string;
+  maxSelectNum: string;
   resourceIds: number[];
 }
 

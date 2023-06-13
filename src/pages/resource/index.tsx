@@ -55,6 +55,7 @@ const Resource: React.FC = () => {
       await addResource(val);
       message.success('添加成功');
       setAddModalVisible(false);
+      await fetchResourceList();
     } catch (error) {
       message.error('添加失败');
     }
@@ -67,8 +68,9 @@ const Resource: React.FC = () => {
       centered: true,
       onOk: async () => {
         try {
-          deleteInfo(id, DeleteType.Resource);
+          await deleteInfo(id, DeleteType.Resource);
           message.success('删除成功');
+          await fetchResourceList();
         } catch (error) {
           message.error('删除失败');
         }
@@ -79,6 +81,7 @@ const Resource: React.FC = () => {
   const fetchResourceList = async () => {
     try {
       setTableLoading(true);
+      setTableListDataSource([]);
       const res = await getResourceInfo();
       setTableListDataSource(res);
       setTableLoading(false);
