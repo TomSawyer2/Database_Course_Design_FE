@@ -70,7 +70,7 @@ const Student: React.FC = () => {
       dataIndex: 'courseIds',
       search: false,
       render: (_, record) => {
-        return record.courseIds.join(',');
+        return record?.courseIds?.join(',');
       },
     },
     {
