@@ -261,7 +261,7 @@ const Student: React.FC = () => {
         >
           {courseInfo.map(
             (item) =>
-              !selectedCourseIds.includes(item.id) && (
+              !selectedCourseIds?.includes(item.id) && (
                 <Select.Option
                   key={item.id}
                   value={item.id}
